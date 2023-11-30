@@ -1,7 +1,7 @@
 import tkinter.messagebox
 from tkinter import *
 import tkinter as tk
-from PIL import Image, ImageTk, ImageOps, ImageEnhance
+from PIL import Image, ImageTk, ImageOps, ImageEnhance, UnidentifiedImageError
 from tkinter import filedialog, simpledialog
 
 window = Tk()
@@ -41,38 +41,42 @@ def check_image():  # this function does a lot i.e. displaying images inserting 
     global image, watermark
     if main_image_selected:
         try:
-
             panel.forget()
-            our_image = Image.open(image)
-            # our_image = our_image.convert('RGBA')
-            if not saving_image:
-                our_image = ImageOps.contain(our_image, size)
-                our_image = ImageTk.PhotoImage(our_image)
+            try:
+                our_image = Image.open(image)
+                # our_image = our_image.convert('RGBA')
+                if not saving_image:
+                    our_image = ImageOps.contain(our_image, size)
+                    our_image = ImageTk.PhotoImage(our_image)
 
-                if not inserting_watermark_is_active:
-                    panel.config(image=our_image)
-                    panel.image = our_image
+                    if not inserting_watermark_is_active:
+                        panel.config(image=our_image)
+                        panel.image = our_image
+                    else:
+                        our_image.paste(watermark)
+                        panel.config(image=our_image)
+                        panel.image = our_image
                 else:
                     our_image.paste(watermark)
-                    panel.config(image=our_image)
-                    panel.image = our_image
-            else:
-                our_image.paste(watermark)
-                save_as = filedialog.asksaveasfilename(filetypes=[('png file', '.png'), ('jpeg file', '.jpg')],
-                                                       defaultextension='.png')
+                    save_as = filedialog.asksaveasfilename(filetypes=[('png file', '.png'), ('jpeg file', '.jpg')],
+                                                           defaultextension='.png')
 
-                try:
-                    our_image.save(f'{save_as}')
-                except ValueError:
-                    not_saving = tk.messagebox.askyesnocancel(title='Aborting',
-                                                              message='Do you wish to cancel your save?')
-                    print(not_saving)
-                    if not not_saving:
-                        save_image()
+                    try:
+                        our_image.save(f'{save_as}')
+                    except ValueError:
+                        not_saving = tk.messagebox.askyesnocancel(title='Aborting',
+                                                                  message='Do you wish to cancel your save?')
+                        if not not_saving:
+                            save_image()
+
+                        else:
+                            tk.messagebox.showwarning(title='Abort Success', message='Image save Aborted successfully!')
                     else:
-                        tk.messagebox.showwarning(title='Abort Success', message='Image save Aborted successfully!')
-                else:
-                    tk.messagebox.showwarning(title='Success', message='Image saved successfully!')
+                        tk.messagebox.showwarning(title='Success', message='Image saved successfully!')
+            except UnidentifiedImageError:
+                tk.messagebox.showwarning(title='Error', message='Image Format not Supported')
+            except AttributeError:
+                pass
 
         except FileNotFoundError:
             tk.messagebox.showwarning(title="Error", message='Image Not Found!!')
