@@ -37,7 +37,7 @@ def pick_image():
     check_image()
 
 
-def check_image():
+def check_image():  # this function does a lot i.e. displaying images inserting watermark, main image and saving
     global image, watermark
     if main_image_selected:
         try:
@@ -80,9 +80,10 @@ def check_image():
         tk.messagebox.showwarning(title='Error', message='Must Load Image First!')
 
 
-def select_watermark():
+def select_watermark():  # this function allows user to directly choose watermark on pc
     global watermark, watermark_image_present
     watermark_image_present = True
+
     # giving option to choose your watermark
     open_watermark = filedialog.askopenfilename()
     watermark = Image.open(open_watermark)
@@ -109,6 +110,7 @@ def save_image():
 # //////////////////////////////////////////////////////////////////////////////////////
 # //////////////////////////////////////////////////////////////////////////////////////
 
+# buttons here
 get_image = Button(window, text="Load Image", command=pick_image)
 get_image.grid(row=2, column=0)
 
@@ -125,7 +127,9 @@ save_watermarked_image.grid(row=2, column=3)
 panel = Label(window)  # display main image
 panel.grid(row=0, columnspan=4)
 
-mark_panel = Label(window)  # display watermark
-mark_panel.grid(row=0, columnspan=4)
+
+# not useful at the moment
+# mark_panel = Label(window)  # display watermark
+# mark_panel.grid(row=0, columnspan=4)
 
 window.mainloop()
